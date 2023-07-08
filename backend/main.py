@@ -26,7 +26,7 @@ def test():
 # USER ROUTES
 
 # Register User
-@app.post("/api/users", tags=["user"])
+@app.post("/api/users", status_code=201, tags=["user"])
 async def registerUser(user : UserSchema):
     userJSON = jsonable_encoder(user)
     response = await dbRegisterUser(userJSON)
