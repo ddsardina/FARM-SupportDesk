@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.encoders import jsonable_encoder
 from app.model import UserSchema
+from app.dbfunctions import dbRegisterUser
 
 
 app = FastAPI()
@@ -25,8 +27,10 @@ def test():
 
 # Register User
 @app.post("/api/users", tags=["user"])
-def registerUser(user : UserSchema = Body(default=None)):
-    return {"Data" : "test"}
+async def registerUser(user : UserSchema):
+    userJSON = jsonable_encoder(user)
+    response = await dbRegisterUser(userJSON)
+    return response
 
 # Login User
 @app.post("/api/users/login", tags=["user"])

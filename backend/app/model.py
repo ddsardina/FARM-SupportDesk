@@ -3,9 +3,9 @@ from pydantic import BaseModel, Field, EmailStr
 #Come back to Enum Product and Status
 
 class UserSchema(BaseModel):
-    name : str = Field(default=None)
-    email : EmailStr = Field(default=None)
-    password : str = Field(default=None)
+    name : str
+    email : EmailStr
+    password : str
     isAdmin : bool = Field(default=False)
     class Config:
         schema_extra = {
