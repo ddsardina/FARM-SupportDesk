@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
-from app.model import UserSchema
-from app.dbfunctions import dbRegisterUser
+from app.model import UserSchema, UserLoginSchema
+from app.dbfunctions import dbRegisterUser, dbLoginUser
 
 
 app = FastAPI()
@@ -33,9 +33,11 @@ async def registerUser(user : UserSchema):
     return response
 
 # Login User
-@app.post("/api/users/login", tags=["user"])
-def loginUser():
-    return {"Data" : "Login User"}
+@app.post("/api/users/login", status_code=201, tags=["user"])
+async def loginUser(login : UserLoginSchema):
+    loginJSON = jsonable_encoder(login)
+    response = await dbLoginUser(loginJSON)
+    return response
 
 # Get User Info
 @app.get("api/users/me", tags=["user"])

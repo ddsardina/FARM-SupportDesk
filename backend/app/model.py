@@ -16,6 +16,17 @@ class UserSchema(BaseModel):
             }
         }
 
+class UserLoginSchema(BaseModel):
+    email : EmailStr
+    password : str
+    class Config:
+        schema_extra = {
+            "login_demo" : {
+                "email" : "test@gmail.com",
+                "password" : "Pass123word"
+            }
+        }
+
 class TicketSchema(BaseModel):
     user : str = Field(default=None)
     product : str = Field(default=None)

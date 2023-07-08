@@ -3,7 +3,7 @@ import certifi
 from fastapi import HTTPException
 from decouple import config
 from .auth.jwtHandler import signJWT
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 
 
 cert = certifi.where()
@@ -27,3 +27,17 @@ async def dbRegisterUser(user : dict):
     user.pop("_id")
     user.pop("password")
     return user
+
+async def dbLoginUser(login : dict):
+    existingUser = await userCollection.find_one({"email" : login["email"]})
+    if existingUser != None and check_password_hash(existingUser["password"], login["password"]):
+        existingUser.pop("password")
+        userID = str(existingUser["_id"])
+        existingUser.pop("_id")
+        existingUser.pop("isAdmin")
+        existingUser["id"] = userID
+        accessToken = signJWT(userID)
+        existingUser["token"] = accessToken
+        return existingUser
+    raise HTTPException(status_code=400, detail="Invalid Credentials")
+
