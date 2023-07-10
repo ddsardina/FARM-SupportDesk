@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from app.model import UserSchema, UserLoginSchema
-from app.dbfunctions import dbRegisterUser, dbLoginUser
+from app.dbfunctions import dbRegisterUser, dbLoginUser, dbUserInfo
+from app.auth.jwtBearer import jwtBearer
 
 
 app = FastAPI()
@@ -40,9 +41,10 @@ async def loginUser(login : UserLoginSchema):
     return response
 
 # Get User Info
-@app.get("api/users/me", tags=["user"])
-def getMe():
-    return {"Data" : "Get Me"}
+@app.get("/api/users/me", dependencies=[Depends(jwtBearer())], tags=["user"])
+async def getMe(token : str = Depends(jwtBearer())):
+    response = await dbUserInfo(token)
+    return response
 
 # TICKET ROUTES
 

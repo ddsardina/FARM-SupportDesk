@@ -2,8 +2,9 @@ import motor.motor_asyncio
 import certifi
 from fastapi import HTTPException
 from decouple import config
-from .auth.jwtHandler import signJWT
+from .auth.jwtHandler import signJWT, decodeJWT
 from werkzeug.security import generate_password_hash, check_password_hash
+from bson import ObjectId
 
 
 cert = certifi.where()
@@ -41,3 +42,12 @@ async def dbLoginUser(login : dict):
         return existingUser
     raise HTTPException(status_code=400, detail="Invalid Credentials")
 
+async def dbUserInfo(token : str):
+    access_token = decodeJWT(token)
+    _id = ObjectId(access_token["userID"])
+    user = await userCollection.find_one({"_id" : _id})
+    user.pop("_id")
+    user.pop("password")
+    user.pop("isAdmin")
+    user["id"] = access_token["userID"]
+    return user
