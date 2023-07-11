@@ -51,3 +51,28 @@ async def dbUserInfo(token : str):
     user.pop("isAdmin")
     user["id"] = access_token["userID"]
     return user
+
+
+# TICKET FUNCTIONS
+
+async def dbGetAllTickets(token : str):
+    access_token = decodeJWT(token)
+    userID = ObjectId(access_token["userID"])
+    tickets = ticketCollection.find({"user":userID})
+    ticketList = []
+    for ticket in await tickets.to_list(length=20):
+        print("test")
+        ticket["_id"] = str(ticket["_id"])
+        ticket["user"] = str(ticket["user"])
+        ticketList.append(ticket)
+    return ticketList
+    
+
+async def dbCreateTicket(ticket : dict, token : str):
+    access_token = decodeJWT(token)
+    userID = ObjectId(access_token["userID"])
+    ticket['user'] = userID
+    new_ticket = await ticketCollection.insert_one(ticket)
+    ticket['_id'] = str(ticket["_id"])
+    ticket['user'] = str(ticket['user'])
+    return ticket
