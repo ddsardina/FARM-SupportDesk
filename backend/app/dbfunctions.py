@@ -76,3 +76,14 @@ async def dbCreateTicket(ticket : dict, token : str):
     ticket['_id'] = str(ticket["_id"])
     ticket['user'] = str(ticket['user'])
     return ticket
+
+async def dbGetTicket(ticketID : str, token : str):
+    access_token = decodeJWT(token)
+    userID = ObjectId(access_token["userID"])
+    ticketID = ObjectId(ticketID)
+    ticket = await ticketCollection.find_one({"_id" : ticketID})
+    if ticket["user"] == userID:
+        ticket["_id"] = str(ticket["_id"])
+        ticket["user"] = str(ticket["user"])
+        return ticket
+    raise HTTPException(status_code=403, detail="Unauthorized Access")

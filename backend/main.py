@@ -2,7 +2,7 @@ from fastapi import FastAPI, Body, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from app.model import UserSchema, UserLoginSchema, TicketSchema
-from app.dbfunctions import dbRegisterUser, dbLoginUser, dbUserInfo, dbCreateTicket, dbGetAllTickets
+from app.dbfunctions import dbRegisterUser, dbLoginUser, dbUserInfo, dbCreateTicket, dbGetAllTickets, dbGetTicket
 from app.auth.jwtBearer import jwtBearer
 
 
@@ -62,9 +62,10 @@ async def createTicket(ticket : TicketSchema, token : str = Depends(jwtBearer())
     return response
 
 # Get Ticket By ID
-@app.get("/api/ticket/{id}", tags=["tickets"])
-def getTicketByID():
-    return {"Data" : "Get Ticket by ID"}
+@app.get("/api/ticket/{id}", dependencies=[Depends(jwtBearer())], tags=["tickets"])
+async def getTicketByID(id : str, token : str = Depends(jwtBearer())):
+    response = await dbGetTicket(id, token)
+    return response
 
 # Delete Ticket By ID
 @app.delete("/api/ticket/{id}", tags=["tickets"])
