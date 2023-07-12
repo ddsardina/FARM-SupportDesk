@@ -80,10 +80,47 @@ async def dbCreateTicket(ticket : dict, token : str):
 async def dbGetTicket(ticketID : str, token : str):
     access_token = decodeJWT(token)
     userID = ObjectId(access_token["userID"])
-    ticketID = ObjectId(ticketID)
-    ticket = await ticketCollection.find_one({"_id" : ticketID})
-    if ticket["user"] == userID:
-        ticket["_id"] = str(ticket["_id"])
-        ticket["user"] = str(ticket["user"])
-        return ticket
+    try:
+        ticketID = ObjectId(ticketID)
+        ticket = await ticketCollection.find_one({"_id" : ticketID})
+        if ticket["user"] == userID:
+            ticket["_id"] = str(ticket["_id"])
+            ticket["user"] = str(ticket["user"])
+            return ticket
+    except:
+        raise HTTPException(status_code=400, detail="Invlaid Ticket ID")
     raise HTTPException(status_code=403, detail="Unauthorized Access")
+
+async def dbDeleteTicket(ticketID : str, token : str):
+    access_token = decodeJWT(token)
+    userID = ObjectId(access_token["userID"])
+    try:
+        ticketID = ObjectId(ticketID)
+        ticket = await ticketCollection.find_one({"_id" : ticketID})
+        if ticket["user"] == userID:
+            result = await ticketCollection.delete_one({"_id" : ticketID})
+            return {"detail" : "Ticket has been deleted"}
+    except:
+        raise HTTPException(status_code=400, detail="Invlaid Ticket ID")
+    raise HTTPException(status_code=403, detail="Unauthorized Access")
+
+async def dbUpdateTicket(ticketID, ticket : dict, token : str):
+    access_token = decodeJWT(token)
+    userID = ObjectId(access_token["userID"])
+    try: 
+        ticketID = ObjectId(ticketID)
+        dbTicket = await ticketCollection.find_one({"_id" : ticketID})
+        if dbTicket["user"] == userID:
+            updates = {}
+            for x,y in ticket.items():
+                if y != None:
+                    updates[x] = y
+            updatedTicket = await ticketCollection.update_one({"_id" : ticketID}, {"$set": updates})
+            dbTicket = await ticketCollection.find_one({"_id" : ticketID})
+            dbTicket["_id"] = str(dbTicket["_id"])
+            dbTicket["user"] = str(dbTicket["user"])
+            return dbTicket
+    except:
+        raise HTTPException(status_code=400, detail="Invlaid Ticket ID")
+    raise HTTPException(status_code=403, detail="Unauthorized Access")    
+    

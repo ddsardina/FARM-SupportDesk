@@ -2,7 +2,7 @@ from fastapi import FastAPI, Body, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 from app.model import UserSchema, UserLoginSchema, TicketSchema
-from app.dbfunctions import dbRegisterUser, dbLoginUser, dbUserInfo, dbCreateTicket, dbGetAllTickets, dbGetTicket
+from app.dbfunctions import dbRegisterUser, dbLoginUser, dbUserInfo, dbCreateTicket, dbGetAllTickets, dbGetTicket, dbDeleteTicket, dbUpdateTicket
 from app.auth.jwtBearer import jwtBearer
 
 
@@ -68,11 +68,14 @@ async def getTicketByID(id : str, token : str = Depends(jwtBearer())):
     return response
 
 # Delete Ticket By ID
-@app.delete("/api/ticket/{id}", tags=["tickets"])
-def deleteTicketByID():
-    return {"Data" : "Delete Ticket by ID"}
+@app.delete("/api/ticket/{id}", dependencies=[Depends(jwtBearer())], tags=["tickets"])
+async def deleteTicketByID(id : str, token : str = Depends(jwtBearer())):
+    response = await dbDeleteTicket(id, token)
+    return response
 
 # Update Ticket By ID
 @app.put("/api/ticket/{id}", tags=["tickets"])
-def updateTicketByID():
-    return {"Data" : "Update Ticket by ID"}
+async def updateTicketByID(id : str, ticket : TicketSchema, token : str = Depends(jwtBearer())):
+    ticketJSON = jsonable_encoder(ticket)
+    response = await dbUpdateTicket(id, ticketJSON, token)
+    return response
