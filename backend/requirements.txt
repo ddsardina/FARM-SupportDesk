@@ -6,4 +6,3 @@ motor == 3.2.0
 certifi == 2023.5.7
 email-validator == 2.0.0.post2
 Werkzeug == 2.3.6
-bson == 0.5.10
