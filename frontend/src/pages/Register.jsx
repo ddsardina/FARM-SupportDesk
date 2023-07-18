@@ -4,7 +4,7 @@ import {toast} from 'react-toastify'
 import { FaUser } from "react-icons/fa"
 import {useSelector, useDispatch} from 'react-redux'
 import { register, reset } from "../features/auth/authSlice"
-import { Spinner } from '../componenets/Spinner'
+import Spinner from '../componenets/Spinner'
 
 function Register() {
   const [formData, setFormData] = useState({
