@@ -7,6 +7,7 @@ import Register from './pages/Register'
 import Login from './pages/Login'
 import Header from './componenets/Header'
 import NewTicket from './pages/NewTicket'
+import Tickets from './pages/Tickets'
 
 function App() {
   return <>
@@ -19,6 +20,9 @@ function App() {
           <Route path='/register' element={<Register />} />
           <Route path='/new-ticket' element={<PrivateRoute />}>
             <Route path='/new-ticket' element={<NewTicket />}/>
+          </Route>
+          <Route path='/tickets' element={<PrivateRoute />}>
+            <Route path='/tickets' element={<Tickets />}/>
           </Route>
         </Routes>
       </div>
