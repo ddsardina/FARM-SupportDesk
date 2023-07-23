@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, EmailStr
-import time
+import datetime
 
 #Come back to Enum Product and Status
 
@@ -33,7 +33,7 @@ class TicketSchema(BaseModel):
     product : str = Field(default=None)
     description : str = Field(default=None)
     status : str = Field(default="new")
-    timestamp : str = Field(default=time.time())
+    timestamp : str = Field(default=datetime.datetime.utcnow())
     class Config:
         schema_extra = {
             "ticket_demo" : {

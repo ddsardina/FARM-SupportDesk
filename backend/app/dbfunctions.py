@@ -61,7 +61,6 @@ async def dbGetAllTickets(token : str):
     tickets = ticketCollection.find({"user":userID})
     ticketList = []
     for ticket in await tickets.to_list(length=20):
-        print("test")
         ticket["_id"] = str(ticket["_id"])
         ticket["user"] = str(ticket["user"])
         ticketList.append(ticket)
