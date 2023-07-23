@@ -4,38 +4,46 @@ import ticketService from './ticketService'
 const initialState = {
     tickets: [],
     ticket: {},
-    isError: false,
-    isSuccess: false,
-    isLoading: false,
-    message: ''
 }
 
-// Create New Ticket
+// Create new ticket
 export const createTicket = createAsyncThunk(
-    'ticket/create', 
-    async (ticketData, ThunkAPI) => {
+    'tickets/create',
+    async (ticketData, thunkAPI) => {
         try {
-            const token = ThunkAPI.getState().auth.user.token
+            const token = thunkAPI.getState().auth.user.token
             return await ticketService.createTicket(ticketData, token)
         } catch (error) {
             const message = error.response.data.detail
-
-            return ThunkAPI.rejectWithValue(message)
+            return thunkAPI.rejectWithValue(message)
         }
     }
 )
-
-// Get User Tickets
+  
+  // Get user tickets
 export const getTickets = createAsyncThunk(
-    'ticket/getAll', 
-    async (_, ThunkAPI) => {
+    'tickets/getAll',
+    async (_, thunkAPI) => {
         try {
-            const token = ThunkAPI.getState().auth.user.token
+            const token = thunkAPI.getState().auth.user.token
             return await ticketService.getTickets(token)
         } catch (error) {
             const message = error.response.data.detail
-
-            return ThunkAPI.rejectWithValue(message)
+            return thunkAPI.rejectWithValue(message)
+        }
+    }
+)
+  
+  // Get user ticket
+export const getTicket = createAsyncThunk(
+    'tickets/get',
+    async (ticketId, thunkAPI) => {
+        try {
+            const token = thunkAPI.getState().auth.user.token
+            return await ticketService.getTicket(ticketId, token)
+        } catch (error) {
+            const message = error.response.data.detail
+            return thunkAPI.rejectWithValue(message)
         }
     }
 )
@@ -48,30 +56,14 @@ export const ticketSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(createTicket.pending, (state) => {
-                state.isLoading = true
-            })
-            .addCase(createTicket.fulfilled, (state) => {
-                state.isLoading = false
-                state.isSuccess = true
-            })
-            .addCase(createTicket.rejected, (state, action) => {
-                state.isLoading = false
-                state.isError = true
-                state.message = action.payload
-            })
             .addCase(getTickets.pending, (state) => {
-                state.isLoading = true
+                state.ticket = null
             })
             .addCase(getTickets.fulfilled, (state, action) => {
-                state.isLoading = false
-                state.isSuccess = true
                 state.tickets = action.payload
             })
-            .addCase(getTickets.rejected, (state, action) => {
-                state.isLoading = false
-                state.isError = true
-                state.message = action.payload
+            .addCase(getTicket.fulfilled, (state, action) => {
+                state.ticket = action.payload
             })
     }
 })
